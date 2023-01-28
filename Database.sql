@@ -9,6 +9,21 @@ CREATE TABLE metrics (
     partizione VARCHAR(20),
     UNIQUE(nome,partizione)
 );
+CREATE TABLE metric_values(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    partizione VARCHAR(20),
+    timestamp TIMESTAMP,
+    value FLOAT NOT NULL,
+    FOREIGN KEY (nome) REFERENCES metrics(nome)
+);
+CREATE TABLE SLA_MANAGER(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL UNIQUE,
+    max_value FLOAT,
+    min_value FLOAT,
+    FOREIGN KEY (nome) REFERENCES metrics(nome)
+);
 CREATE TABLE decomposition (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
