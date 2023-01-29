@@ -27,7 +27,10 @@ metric_data = client.get_metric_range_data(
     end_time=end_time,
 )
 metric_df = MetricRangeDataFrame(metric_data)
-data = metric_df.loc[:, ['value']]
+if sys.argv[1] == 'node_filesystem_avail_bytes' or sys.argv[1] == 'node_filesystem_free_bytes':
+    data = metric_df.loc[metric_df['device']=='/dev/sda2', ['value']]
+else:
+    data = metric_df.loc[:, ['value']]
 
 isStationary=False
 critValues=[]
