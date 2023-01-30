@@ -10,7 +10,7 @@ import sys
 
 #import per il db:
 import mysql.connector as sql
-import config
+
 
 class RetrievalService(retrieval_pb2_grpc.RetrievalServiceServicer):
     def __init__(self) -> None:
@@ -19,10 +19,10 @@ class RetrievalService(retrieval_pb2_grpc.RetrievalServiceServicer):
         # Connect to mysql
         try:
             self.cnx = sql.connect( 
-                user=config.user,
-                password=config.password,
-                host=config.host, 
-                database=config.database)
+                user="user",
+                password="password",
+                host="db", 
+                database="test_dsbd")
             self.cursor = self.cnx.cursor()
         except sql.Error as e:
             print(f"Error connecting to Mysql DB: {e}")

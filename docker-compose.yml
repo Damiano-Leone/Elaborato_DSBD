@@ -29,7 +29,8 @@ services:
       
   db:
     image: mysql:5.7
-    
+    ports:
+     - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: test_dsbd
@@ -39,9 +40,9 @@ services:
     - ./Database.sql:/docker-entrypoint-initdb.d/Database.sql
     restart: always
 
-  data_pipeline:
+  etl_data_pipeline:
     build:
-      context: ./data_pipeline
+      context: ./etl_data_pipeline
       dockerfile: Dockerfile
     depends_on:
       - prometheus
@@ -64,3 +65,46 @@ services:
       - MYSQL_USER=user
       - MYSQL_PASSWORD=password
       - MYSQL_DB=test_dsbd
+
+
+  client_data_retrieval:
+   build:
+    context: ./data_retrieval
+    dockerfile: Dockerfile
+   command: python3 /usr/app/asynch_client.py
+   volumes:
+    - ./data_retrieval/data_retrieval:/usr/app/
+   depends_on:
+    - server_data_retrieval
+
+  server_data_retrieval:
+   build:
+    context: ./data_retrieval
+    dockerfile: Dockerfile
+   command: python3 /usr/app/async_server.py
+   volumes:
+    - ./data_retrieval/data_retrieval:/usr/app/
+   depends_on:
+    - db
+   environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_DB=test_dsbd
+
+  
+  sla_manager:
+    build:
+      context: ./sla_manager
+      dockerfile: Dockerfile
+    depends_on:
+      - prometheus
+      - db
+    ports:
+      - 80:80
+    environment:
+     - PROMETHEUS_URL=http://15.160.61.227:29090
+     - MYSQL_HOST=db
+     - MYSQL_USER=user
+     - MYSQL_PASSWORD=password
+     - MYSQL_DB=test_dsbd

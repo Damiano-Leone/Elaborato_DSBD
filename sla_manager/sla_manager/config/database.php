@@ -3,10 +3,10 @@ class Database
 	{
 
 	// credenziali
-	private $host = "localhost";
+	private $host = "db";
 	private $db_name = "test_dsbd";
-	private $username = "root";
-	private $password = "manager";
+	private $username = "user";
+	private $password = "password";
 	public $conn;
     
 	// connessione al database
